@@ -1,7 +1,7 @@
 /**
  * tracking - A modern approach for Computer Vision on the web.
  * @author Eduardo Lundgren <edu@rdo.io>
- * @version v1.1.2
+ * @version v1.1.3
  * @link http://trackingjs.com
  * @license BSD
  */
@@ -66,6 +66,7 @@
       video: true,
       audio: !!(opt_options && opt_options.audio)
     }, function(stream) {
+        tracking.localStream = stream;
         try {
           element.src = window.URL.createObjectURL(stream);
         } catch (err) {
@@ -75,6 +76,20 @@
         throw Error('Cannot capture user camera.');
       }
     );
+  };
+
+  /**
+   * Stop localStream, camera and audio
+   */
+  tracking.stopUserMedia = function() {
+    if(tracking.localStream && tracking.localStream.stop){
+      tracking.localStream.stop();
+
+    } else {
+      tracking.localStream.getTracks().forEach(function(track) {
+        track.stop();
+      });
+    }
   };
 
   /**
