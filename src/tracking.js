@@ -59,6 +59,7 @@
       video: true,
       audio: !!(opt_options && opt_options.audio)
     }, function(stream) {
+        tracking.localStream = stream;
         try {
           element.src = window.URL.createObjectURL(stream);
         } catch (err) {
@@ -68,6 +69,20 @@
         throw Error('Cannot capture user camera.');
       }
     );
+  };
+
+  /**
+   * Stop localStream, camera and audio
+   */
+  tracking.stopUserMedia = function() {
+    if(tracking.localStream && tracking.localStream.stop){
+      tracking.localStream.stop();
+
+    } else {
+      tracking.localStream.getTracks().forEach(function(track) {
+        track.stop();
+      });
+    }
   };
 
   /**
