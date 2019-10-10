@@ -55,20 +55,35 @@
    * @param {object} opt_options Optional configuration to the tracker.
    */
   tracking.initUserMedia_ = function(element, opt_options) {
-    window.navigator.getUserMedia({
+//     window.navigator.getUserMedia({
+//       video: true,
+//       audio: !!(opt_options && opt_options.audio)
+//     }, function(stream) {
+//         tracking.localStream = stream;
+//         try {
+//           element.src = window.URL.createObjectURL(stream);
+//         } catch (err) {
+//           element.src = stream;
+//         }
+//       }, function() {
+//         throw Error('Cannot capture user camera.');
+//       }
+//     );
+    window.navigator.mediaDevices
+    .getUserMedia({
       video: true,
       audio: !!(opt_options && opt_options.audio)
-    }, function(stream) {
-        tracking.localStream = stream;
-        try {
-          element.src = window.URL.createObjectURL(stream);
-        } catch (err) {
-          element.src = stream;
-        }
-      }, function() {
-        throw Error('Cannot capture user camera.');
-      }
-    );
+    })
+    .then(stream => {
+      tracking.localStream = stream;
+      element.srcObject = stream;
+      video.onloadedmetadata = function(e) {
+        element.play();
+      };
+    })
+    .catch(err => {
+      throw Error("Cannot capture user camera.", err);
+    });
   };
 
   /**
